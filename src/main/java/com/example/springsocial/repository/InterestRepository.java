@@ -22,6 +22,7 @@ public interface InterestRepository extends JpaRepository<Interest, Long> {
 
 	  @Query(value = "select * from interests where email = :email", nativeQuery = true)
 	    Interest getByEmail(String email);
-
+//	  @Query(value = "select email from interests where email = :email", nativeQuery = true)
+//	Boolean existsByEmail(String email);
 
 }

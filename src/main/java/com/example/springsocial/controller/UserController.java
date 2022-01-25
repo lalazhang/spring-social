@@ -81,6 +81,7 @@ public class UserController {
     //@PreAuthorize("hasRole('USER')")
     public Interest updateInterest(@CurrentUser @Valid @RequestBody UpdateInterestRequest updateInterestRequest){
     	String key = updateInterestRequest.getEmail();
+    	
     	//User user = userRepository.getUserDetails(key);
     	Interest interest = new Interest(updateInterestRequest.getEmail()) ;
     	interest.setMovie(updateInterestRequest.isMovie());
@@ -128,9 +129,57 @@ public class UserController {
      
     @PostMapping("/user/me/changeInterest")
     //@PreAuthorize("hasRole('USER')")
-    public Interest changeInterest(@CurrentUser @Valid @RequestBody UpdateInterestRequest updateInterestRequest){
+    // @valid removed from parameter
+    public Interest changeInterest(@CurrentUser  @RequestBody UpdateInterestRequest updateInterestRequest){
     	//general interest
-    	String email = updateInterestRequest.getEmail();
+    	if (!fitnessRepository.existsById(updateInterestRequest.getEmail())) {
+    		
+    		System.out.print("Creating new profile");
+    		Interest interest = new Interest(updateInterestRequest.getEmail()) ;
+        	interest.setMovie(updateInterestRequest.isMovie());
+        	interest.setMusic(updateInterestRequest.isMusic());
+        	interest.setName(updateInterestRequest.getName());
+        	interest.setVideogame(updateInterestRequest.isVideoGame());
+        	interest.setPersonalType(updateInterestRequest.getPersonalityType());
+        	interest.setSport(updateInterestRequest.isSport());   	
+        	interestRepository.save(interest);
+        	
+        	//fitness
+        	Fitness fitness = new Fitness();
+        	fitness.setEmail(updateInterestRequest.getEmail());
+        	fitness.setGym(updateInterestRequest.isGym());
+        	fitness.setCalisthenics(updateInterestRequest.isCalisthenics());
+        	fitness.setCycling(updateInterestRequest.isCycling());
+        	fitness.setDancing(updateInterestRequest.isDancing());
+        	fitness.setHiking(updateInterestRequest.isHiking());
+        	fitness.setHorseRiding(updateInterestRequest.isHorseRiding());
+        	fitness.setRockClimbing(updateInterestRequest.isRockClimbing());
+        	fitness.setWeightLifting(updateInterestRequest.isWeightLifting());
+        	fitness.setYoga(updateInterestRequest.isYoga());
+        	fitnessRepository.save(fitness);
+        	
+        	//religion
+        	Religion religion = new Religion();
+        	religion.setEmail(updateInterestRequest.getEmail());
+        	religion.setAnimism(updateInterestRequest.isAnimism());
+        	religion.setAtheism(updateInterestRequest.isAtheism());
+        	religion.setMonotheism(updateInterestRequest.isMonotheism());
+        	religion.setPolytheism(updateInterestRequest.isPolytheism());
+        	religion.setTotemism(updateInterestRequest.isTotemism());
+        	religionRepository.save(religion);
+        	
+        	//leisure
+        	Leisure leisure = new Leisure();
+        	leisure.setEmail(updateInterestRequest.getEmail());
+        	leisure.setCognitive(updateInterestRequest.isCognitive());
+        	leisure.setPhysical(updateInterestRequest.isPhysical());
+        	leisure.setSocial(updateInterestRequest.isSocial());
+        	leisureRepository.save(leisure);
+        	return interest;
+    		
+    	}
+    	else {
+    		String email = updateInterestRequest.getEmail();
     	Interest interest = interestRepository.getByEmail(email);
     	interest.setMovie(updateInterestRequest.isMovie());
     	interest.setMusic(updateInterestRequest.isMusic());
@@ -168,15 +217,19 @@ public class UserController {
     	leisure.setPhysical(updateInterestRequest.isPhysical());
     	leisure.setSocial(updateInterestRequest.isSocial());
     	leisureRepository.save(leisure);
+    	//return interest;
+    	System.out.print("Updating interest profile");
     	return interest;
+    	}
+    	
 
  
     	
     }
    
     
-    @GetMapping("/user/me/getProfile")
-    public User getCurrentUserInfo(@CurrentUser @Valid @RequestBody String email) {
+    @GetMapping("/user/me/getProfile/{email}")
+    public User getCurrentUserInfo(@CurrentUser @Valid  @PathVariable String email) {
     	//To run postman use text and type string: zhanglala0208@gmail.com 
     	User user = userRepository.getUserDetails(email);
     	return user;

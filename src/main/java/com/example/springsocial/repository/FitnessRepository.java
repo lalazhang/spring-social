@@ -8,7 +8,7 @@ import com.example.springsocial.model.Fitness;
 import com.example.springsocial.model.Interest;
 
 @Repository
-public interface FitnessRepository extends JpaRepository <Fitness, Long> {
+public interface FitnessRepository extends JpaRepository <Fitness, String> {
 	  //@Query(value = "select * from fitnesss where email = :email", nativeQuery = true)
 	  Fitness findByEmail(String email);
 }
